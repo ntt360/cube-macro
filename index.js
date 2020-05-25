@@ -19,7 +19,9 @@ const tplPath = path.resolve(program.template ? program.template : defaultTplPat
 const outPath = path.resolve(program.out ? program.out : defaultOutPath);
 
 const dataConfigPath= path.join(tplPath, defaultConfigPath);
-const dataConfig = require(dataConfigPath)({});
+const dataConfig = require(dataConfigPath)({
+  isProd: process.env.NODE_ENV === 'production'
+});
 
 function isString(source) {
   return '[object String]' === Object.prototype.toString.call(source);
@@ -81,35 +83,37 @@ function runTask (pipeLineHandle) {
   })
 }
 
-runTask(function() {
-  return dataConfig.map(function(config) {
-    const dirName = config.project.dirName;
-    const pipeConfig = [
-      {
-        key: 'cube',
-        src: [
-          `${tplPath}/cube.json`
-        ],
-        dist: path.join(outPath, dirName)
-      },
-      {
-        key: 'api',
-        src: [
-          `${tplPath}/api.json`
-        ],
-        dist: path.join(outPath, dirName)
-      },
-      {
-        key: 'data',
-        src: [
-          `${tplPath}/src/**/*`,
-          `!${tplPath}/node_modules/**/*`,
-          `!${tplPath}/data.config.js`,
-          `!${tplPath}/LICENSE`
-        ],
-        dist: path.join(outPath, dirName, './src')
-      }
-    ];
-    return [ config, pipeConfig ];
+Promise.resolve(dataConfig).then(function(dataConfig) {
+  runTask(function() {
+    return dataConfig.map(function(config) {
+      const dirName = config.project.dirName;
+      const pipeConfig = [
+        {
+          key: 'cube',
+          src: [
+            `${tplPath}/cube.json`
+          ],
+          dist: path.join(outPath, dirName)
+        },
+        {
+          key: 'api',
+          src: [
+            `${tplPath}/api.json`
+          ],
+          dist: path.join(outPath, dirName)
+        },
+        {
+          key: 'data',
+          src: [
+            `${tplPath}/src/**/*`,
+            `!${tplPath}/node_modules/**/*`,
+            `!${tplPath}/data.config.js`,
+            `!${tplPath}/LICENSE`
+          ],
+          dist: path.join(outPath, dirName, './src')
+        }
+      ];
+      return [ config, pipeConfig ];
+    })
   })
-})
+}).catch(function (e) { console.log(e) })

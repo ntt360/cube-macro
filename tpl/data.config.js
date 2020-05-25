@@ -1,4 +1,5 @@
 module.exports = function (options) {
+
   var offlineData = {
     "big_title": {
       "article_id": "KtjZPhS3MHv3Pw",
@@ -33,7 +34,8 @@ module.exports = function (options) {
       }
     ]
   };
-  return [
+
+  const config = [
     {
       project: {
         dirName: 'game'
@@ -74,5 +76,7 @@ module.exports = function (options) {
         offlineData
       }
     },
-  ]
+  ];
+
+  return config;
 }

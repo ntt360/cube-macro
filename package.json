@@ -4,7 +4,8 @@
   "description": "cube-macro是一个实验性质的批量生成同类cube的工具",
   "main": "index.js",
   "scripts": {
-    "build": "node index.js -t ./tpl -o ./dist",
+    "build": "NODE_ENV=production node index.js -t ./tpl -o ./dist ",
+    "dev-build": "NODE_ENV=development node index.js -t ./tpl -o ./dist ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

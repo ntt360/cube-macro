@@ -18,6 +18,7 @@ cubetool init <cubeid> -t https://github.com/ntt360/cube-tpl-news-1headtext5text
 
 ```
 module.exports = function (options) {
+  
   var offlineData = {
     "big_title": {
       "article_id": "KtjZPhS3MHv3Pw",
@@ -52,7 +53,8 @@ module.exports = function (options) {
       }
     ]
   };
-  return [
+
+  const config = [
     {
       // 项目相关配置
       project: {
@@ -97,7 +99,17 @@ module.exports = function (options) {
         offlineData
       }
     },
-  ]
+  ];
+
+  return config;
+
+  // 异步获取配置数据可返回promise
+  // return new Promise((resolve, reject) => {
+  //   setTimeout(() => {
+  //     resolve(config)
+  //   }, 1000);
+  // });
+
 }
 ```
 
