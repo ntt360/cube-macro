@@ -1,0 +1,15 @@
+{
+  "detail": {
+    "host": "__host__",
+    "timeout": 5000,
+    "data": {
+      "fmt": "jsonp",
+      "project_id": "1",
+      "bt": "45",
+      "st": "59",
+      "category": "KArbQUbnXq8oOj"
+    },
+    "cb": "_callback",
+    "offline": "__offlineData__"
+  }
+}

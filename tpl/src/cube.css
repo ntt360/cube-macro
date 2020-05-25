@@ -1,0 +1,57 @@
+.title {
+  color: #00c13c;
+  font-size: 16px;
+  line-height: 20px;
+  width: 100%;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+.title:hover {
+  color: #e60012;
+}
+.split-line {
+  margin: 5px 0 10px 0;
+  border: none;
+  border-bottom: 1px dashed #dddddd;
+  clear: both;
+}
+.list li {
+  position: relative;
+  width: 368px;
+  height: 20px;
+  margin-bottom: 5px;
+  overflow: hidden;
+  list-style-type: disc;
+  padding-left: 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.list li::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background-color: #cccccc;
+  vertical-align: middle;
+  border-radius: 100%;
+  position: absolute;
+  top: 48%;
+  left: 0;
+}
+.list li a {
+  display: inline-block;
+  width: 100%;
+  height: 16px;
+  line-height: 16px;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.__cubeName__ {
+  background: #ffffff;
+}

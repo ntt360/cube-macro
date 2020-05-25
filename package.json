@@ -1,0 +1,27 @@
+{
+  "name": "cube-macro",
+  "version": "1.0.0",
+  "description": "cube-macro是一个实验性质的批量生成同类cube的工具",
+  "main": "index.js",
+  "scripts": {
+    "build": "node index.js -t ./tpl -o ./dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ntt360/cube-macro.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ntt360/cube-macro/issues"
+  },
+  "homepage": "https://github.com/ntt360/cube-macro#readme",
+  "dependencies": {
+    "commander": "^5.1.0",
+    "istextorbinary": "^4.3.0",
+    "through2": "^3.0.1",
+    "vinyl-fs": "^3.0.3"
+  }
+}
