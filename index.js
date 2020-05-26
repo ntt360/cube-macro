@@ -11,8 +11,8 @@ const defaultConfigPath = './data.config.js';
 program
   .version('0.0.1', '-V, --version', '查看版本')
   .helpOption('-h, --help', '帮助')
-  .option('-t, --template', '指定模板路径', defaultTplPath)
-  .option('-o, --out', '指定输出路径', defaultOutPath)
+  .option('-t, --template <path>', '指定模板路径', defaultTplPath)
+  .option('-o, --out <path>', '指定输出路径', defaultOutPath)
   .parse(process.argv);
 
 const tplPath = path.resolve(program.template ? program.template : defaultTplPath);
@@ -57,7 +57,7 @@ function runTask (pipeLineHandle) {
           }
       
           function doReplace() {
-            if (file.isBuffer()) {
+            if (config[pipe.key] && file.isBuffer()) {
               const buf = replaceBuffer(String(file.contents), config[pipe.key]);
               file.contents = new Buffer(buf);
               return callback(null, file);
