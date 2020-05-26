@@ -4,9 +4,10 @@
   "description": "cube-macro是一个实验性质的批量生成同类cube的工具",
   "main": "index.js",
   "scripts": {
-    "build": "NODE_ENV=production node index.js -t ./tpl -o ./dist ",
-    "dev-build": "NODE_ENV=development node index.js -t ./tpl -o ./dist ",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test-build": "NODE_ENV=production node index.js -t ./tpl -o ./dist",
+    "test-dev-build": "NODE_ENV=development node index.js -t ./tpl -o ./dist",
+    "version": "node index.js -V",
+    "help": "node index.js -h"
   },
   "repository": {
     "type": "git",
@@ -20,8 +21,10 @@
   },
   "homepage": "https://github.com/ntt360/cube-macro#readme",
   "dependencies": {
+    "cfonts": "^2.8.2",
     "commander": "^5.1.0",
     "istextorbinary": "^4.3.0",
+    "signale": "^1.4.0",
     "through2": "^3.0.1",
     "vinyl-fs": "^3.0.3"
   },

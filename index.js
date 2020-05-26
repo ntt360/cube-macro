@@ -3,17 +3,27 @@ const program = require('commander');
 const vfs = require('vinyl-fs');
 const through = require('through2');
 const istextorbinary = require('istextorbinary');
+const CFonts = require('cfonts');
+const { Signale } = require('signale');
 
 const defaultTplPath = './tpl';
 const defaultOutPath = './dist';
 const defaultConfigPath = './data.config.js';
 
+const LOGO = CFonts.render('cube-macro', {
+  font: 'block',
+  align: 'left',
+  colors: ["#00ce41", "#ffffff"],
+  env: 'node'
+}).string
+
 program
-  .version('0.0.1', '-V, --version', '查看版本')
+  .version(`${LOGO}v1.0.0`, '-V, --version', '查看版本')
   .helpOption('-h, --help', '帮助')
   .option('-t, --template <path>', '指定模板路径', defaultTplPath)
   .option('-o, --out <path>', '指定输出路径', defaultOutPath)
   .parse(process.argv);
+
 
 const tplPath = path.resolve(program.template ? program.template : defaultTplPath);
 const outPath = path.resolve(program.out ? program.out : defaultOutPath);
@@ -38,9 +48,23 @@ function replaceBuffer (str, config) {
   }, str);
 }
 
+function signaleHandle(pipeHandle) {
+  return function(collectConfig) {
+    const [ config ] = collectConfig;
+    const dirName = config.project.dirName;
+    const interactive = new Signale({ interactive: true, scope: dirName });
+
+    interactive.scope(dirName).await(`building...`);
+    const pipeConfigList = pipeHandle.call(null, collectConfig);
+    interactive.scope(dirName).success(`${dirName} built successfully!\n`);
+
+    return pipeConfigList
+  }
+}
+
 function runTask (pipeLineHandle) {
   const pipeList = pipeLineHandle();
-  return pipeList.map(function(collectConfig) {
+  return pipeList.map(signaleHandle(function(collectConfig) {
     const [ config, pipeConfig ] = collectConfig;
     return pipeConfig.map(function(pipe) {
       return vfs.src(pipe.src)
@@ -78,9 +102,10 @@ function runTask (pipeLineHandle) {
           });
 
         }))
-        .pipe(vfs.dest(pipe.dist));
+        .pipe(vfs.dest(pipe.dist))
+        .on('end', function() {});
     })
-  })
+  }))
 }
 
 Promise.resolve(dataConfig).then(function(dataConfig) {
@@ -116,4 +141,4 @@ Promise.resolve(dataConfig).then(function(dataConfig) {
       return [ config, pipeConfig ];
     })
   })
-}).catch(function (e) { console.log(e) })
+}).catch(function (error) { new Signale().fatal(new Error(error)) })
