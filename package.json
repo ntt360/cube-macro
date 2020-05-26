@@ -24,5 +24,8 @@
     "istextorbinary": "^4.3.0",
     "through2": "^3.0.1",
     "vinyl-fs": "^3.0.3"
+  },
+  "bin": {
+    "cube-macro": "./bin/cube-macro.js"
   }
 }
