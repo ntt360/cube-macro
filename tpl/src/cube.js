@@ -6,6 +6,8 @@ export default {
   onReady() {
     var showId = '__showId__'
     var offlineData = '__offlineData__'
+    var result = '__result__'
+    var msg = '__result.msg__'
     this.request({
       api: "detail",
       complete: (defaultData, res) => {

@@ -53,6 +53,9 @@ module.exports = function (options) {
       data: {
         cubeName: 'game-cube-name',
         showId: 'XXXXXX',
+        result: {
+          msg: "success"
+        },
         offlineData
       }
     },
@@ -73,6 +76,9 @@ module.exports = function (options) {
       data: {
         cubeName: 'edu-cube-name',
         showId: 'XXXXXX',
+        result: {
+          msg: "success"
+        },
         offlineData
       }
     },

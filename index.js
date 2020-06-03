@@ -37,13 +37,21 @@ function isString(source) {
   return '[object String]' === Object.prototype.toString.call(source);
 };
 
-function replaceBuffer (str, config) {
-  return Object.keys(config).reduce(function(str, key) {
-    const value = config[key];
+function exec(expression, context) {
+  with (context) {
+    return eval(expression)
+  }
+}
+
+function replaceBuffer (str, config, extname) {
+  const matchVariableList = str.match(/__(\S*)__/ig);
+  return matchVariableList.reduce(function(str, __key__) {
+    const key = __key__.match(/__(\S*)__/)[1];
+    const value = exec(key, config)
     const valueIsString = isString(value)
     const search = new RegExp(valueIsString ? `__${key}__` : `('|")__${key}__('|")`, "gi");
     return str.replace(search, function() {
-      return valueIsString ? value : JSON.stringify(value)
+      return isString(value) ? value : JSON.stringify(value)
     })
   }, str);
 }
@@ -82,7 +90,7 @@ function runTask (pipeLineHandle) {
       
           function doReplace() {
             if (config[pipe.key] && file.isBuffer()) {
-              const buf = replaceBuffer(String(file.contents), config[pipe.key]);
+              const buf = replaceBuffer(String(file.contents), config[pipe.key], path.extname(file.path));
               file.contents = new Buffer(buf);
               return callback(null, file);
             }
