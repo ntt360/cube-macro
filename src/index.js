@@ -1,46 +1,53 @@
 const path = require('path');
-const program = require('commander');
 const vfs = require('vinyl-fs');
 const through = require('through2');
 const istextorbinary = require('istextorbinary');
-const CFonts = require('cfonts');
+const chokidar = require('chokidar');
 const { Signale } = require('signale');
 
-const defaultTplPath = './tpl';
-const defaultOutPath = './dist';
-const defaultConfigPath = './data.config.js';
-
-const LOGO = CFonts.render('cube-macro', {
-  font: 'block',
-  align: 'left',
-  colors: ["#00ce41", "#ffffff"],
-  env: 'node'
-}).string
-
-program
-  .version(`${LOGO}v1.0.0`, '-V, --version', '查看版本')
-  .helpOption('-h, --help', '帮助')
-  .option('-t, --template <path>', '指定模板路径', defaultTplPath)
-  .option('-o, --out <path>', '指定输出路径', defaultOutPath)
-  .parse(process.argv);
-
-
-const tplPath = path.resolve(program.template ? program.template : defaultTplPath);
-const outPath = path.resolve(program.out ? program.out : defaultOutPath);
-
-const dataConfigPath= path.join(tplPath, defaultConfigPath);
-const dataConfig = require(dataConfigPath)({
-  isProd: process.env.NODE_ENV === 'production'
-});
-
-function isString(source) {
-  return '[object String]' === Object.prototype.toString.call(source);
-};
+const { isString, isFunction } = require('./utils');
+const {
+  DEFAULT_TEMPLATE_PATH,
+  DEFAULT_OUTPUT_PATH
+} = require('./config');
 
 function exec(expression, context) {
   with (context) {
     return eval(expression)
   }
+}
+
+function createPipeConfig({
+  templatePath,
+  outputPath,
+  dirName
+}) {
+  return [
+    {
+      key: 'cube',
+      src: [
+        `${templatePath}/cube.json`
+      ],
+      dist: path.join(outputPath, dirName)
+    },
+    {
+      key: 'api',
+      src: [
+        `${templatePath}/api.json`
+      ],
+      dist: path.join(outputPath, dirName)
+    },
+    {
+      key: 'data',
+      src: [
+        `${templatePath}/src/**/*`,
+        `!${templatePath}/node_modules/**/*`,
+        `!${templatePath}/data.config.js`,
+        `!${templatePath}/LICENSE`
+      ],
+      dist: path.join(outputPath, dirName, './src')
+    }
+  ]
 }
 
 function replaceBuffer (str, config, extname) {
@@ -51,7 +58,7 @@ function replaceBuffer (str, config, extname) {
     const valueIsString = isString(value)
     const search = new RegExp(valueIsString ? `__${key}__` : `('|")__${key}__('|")`, "gi");
     return str.replace(search, function() {
-      return isString(value) ? value : JSON.stringify(value)
+      return valueIsString ? value : JSON.stringify(value)
     })
   }, str);
 }
@@ -116,37 +123,67 @@ function runTask (pipeLineHandle) {
   }))
 }
 
-Promise.resolve(dataConfig).then(function(dataConfig) {
-  runTask(function() {
-    return dataConfig.map(function(config) {
-      const dirName = config.project.dirName;
-      const pipeConfig = [
-        {
-          key: 'cube',
-          src: [
-            `${tplPath}/cube.json`
-          ],
-          dist: path.join(outPath, dirName)
-        },
-        {
-          key: 'api',
-          src: [
-            `${tplPath}/api.json`
-          ],
-          dist: path.join(outPath, dirName)
-        },
-        {
-          key: 'data',
-          src: [
-            `${tplPath}/src/**/*`,
-            `!${tplPath}/node_modules/**/*`,
-            `!${tplPath}/data.config.js`,
-            `!${tplPath}/LICENSE`
-          ],
-          dist: path.join(outPath, dirName, './src')
-        }
-      ];
-      return [ config, pipeConfig ];
+function compile({
+  templatePath,
+  outputPath,
+  config
+}) {
+  const dataConfig = isFunction(config) ? config({
+    isProd: process.env.NODE_ENV === 'production'
+  }) : config;
+
+  return Promise.resolve(dataConfig).then(function(dataConfig) {
+    runTask(function() {
+      return dataConfig.map(function(config) {
+        const dirName = config.project.dirName;
+        const pipeConfig = createPipeConfig({
+          templatePath,
+          outputPath,
+          dirName
+        });
+        return [ config, pipeConfig ];
+      })
     })
+  }).catch(function (error) { new Signale().fatal(new Error(error)) })
+}
+
+module.exports = function ({
+  templatePath = DEFAULT_TEMPLATE_PATH,
+  outputPath = DEFAULT_OUTPUT_PATH,
+  watch = false,
+  config
+}) {
+  if (watch) {
+    chokidar
+      .watch([ templatePath ])
+      .on('change', function(_path) {
+        new Signale().watch(`File: ${_path} has been changed\n`);
+        compile({
+          templatePath,
+          outputPath,
+          config
+        })
+      })
+      .on('ready', function () {
+        new Signale({
+          types: {
+            remind: {
+              badge: '…',
+              color: 'blue',
+              label: '👍 👍 👍',
+              logLevel: 'info'
+            }
+          }
+        }).remind('Watching template directory...\n');
+      })
+      .on('error', function (error) {
+        new Signale().fatal(new Error(error))
+      });
+  }
+
+  return compile({
+    templatePath,
+    outputPath,
+    config
   })
-}).catch(function (error) { new Signale().fatal(new Error(error)) })
+}
