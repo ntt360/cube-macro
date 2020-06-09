@@ -56,6 +56,9 @@ module.exports = function (options) {
         result: {
           msg: "success"
         },
+        getId: function() {
+          return this.showId
+        },
         offlineData
       }
     },
@@ -78,6 +81,9 @@ module.exports = function (options) {
         showId: 'XXXXXX',
         result: {
           msg: "success"
+        },
+        getId: function() {
+          return this.showId
         },
         offlineData
       }

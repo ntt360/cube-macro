@@ -1,6 +1,10 @@
 # cube-macro
 cube-macro是一个用来批量生成同类cube的工具。
 
+## 介绍
+在开发cube时，会遇到开发多个相同样式及逻辑的cube，其中只有某些数据值有所差异。
+使用cube-macro可避免手动创建多个cube的低效操作，以及对项目数据进行结构化管理与维护。
+
 ## 安装
 
 npm安装
@@ -22,6 +26,13 @@ cubeMacro({
 }).then(() => console.log('Finished'));
 ```
 
+## 参数
+
+Options <Object>
+- templatePath <Path> ： 指定模板路径。
+- outputPath <Path> ： 指定输出路径。
+- watch <Boolean> :  监测模板更改，并重新构建。
+- config <Array|Function> ： 配置数据
 
 
 ## 使用
@@ -115,26 +126,36 @@ module.exports = function ({ isProd }) {
 }
 ```
 
-## 解决的问题
-
-在开发cube时，会遇到开发多个相同样式及逻辑的cube，其中只有某些数据值有所差异。
-使用cube-macro可避免手动创建多个cube的低效操作，以及对项目数据进行结构化管理与维护。
-
-
 ## 参考
 
 模板定义：
 ```
 var showId = '__showId__'
-var offlineData = '__offlineData__'
 var result = '__result__'
 var msg = '__result.msg__'
+var msg = '__cubeName + "|" + result.msg__'
+var id = '__getId()__'
 ```
 
-生成：
+配置数据：
+```
+data: {
+	cubeName: 'game-cube-name',
+	showId: 'XXXXXX',
+	result: {
+		msg: "success"
+	},
+	getId: function() {
+		return this.showId
+	}
+}
+```
+
+输出：
 ```
 var showId = 'XXXXXX'
-var offlineData = {"big_title":{"article_id":"KtjZPhS3MHv3Pw","title":"2020助理执业中医师资格考试报考条件","url":"https://news.edu.360.cn/article/detail/KtjZPhS3MHv3Pw"},"small_title":[{"article_id":"MdTZPhS2NHS5Ow","title":"执业药师重点药：黄芩的功效与性能特点！","url":"https://news.edu.360.cn/article/detail/MdTZPhS2NHS5Ow"},{"article_id":"KAfaQBS1MHC6PD","title":"2020儿科中级职称考试报名时间","url":"https://news.edu.360.cn/article/detail/KAfaQBS1MHC6PD"},{"article_id":"KAHdPhS0L3z4Pj","title":"复杂的中医病名该怎么理解？如何对应西医病名","url":"https://news.edu.360.cn/article/detail/KAHdPhS0L3z4Pj"},{"article_id":"KtbUPxS0L3vBOw","title":"2020执业药师报考科目+报考费用+报考入口！","url":"https://news.edu.360.cn/article/detail/KtbUPxS0L3vBOw"},{"article_id":"MdPXRBSzNXW8Pj","title":"中医药的战“疫”力量！高等中医药教育的前世今生","url":"https://news.edu.360.cn/article/detail/MdPXRBSzNXW8Pj"}]}
 var result = {"msg":"success"}
 var msg = 'success'
+var msg = 'game-cube-name|success'
+var id = 'XXXXXX'
 ```

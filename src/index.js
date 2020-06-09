@@ -5,7 +5,7 @@ const istextorbinary = require('istextorbinary');
 const chokidar = require('chokidar');
 const { Signale } = require('signale');
 
-const { isString, isFunction } = require('./utils');
+const { isFunction, isObject } = require('./utils');
 const {
   DEFAULT_TEMPLATE_PATH,
   DEFAULT_OUTPUT_PATH
@@ -51,14 +51,14 @@ function createPipeConfig({
 }
 
 function replaceBuffer (str, config, extname) {
-  const matchVariableList = str.match(/__(\S*)__/ig);
+  const matchVariableList = str.match(/__(.*)__/ig);
   return matchVariableList.reduce(function(str, __key__) {
-    const key = __key__.match(/__(\S*)__/)[1];
+    const key = __key__.match(/__(.*)__/)[1];
     const value = exec(key, config)
-    const valueIsString = isString(value)
-    const search = new RegExp(valueIsString ? `__${key}__` : `('|")__${key}__('|")`, "gi");
+    const valueIsObject = isObject(value)
+    const search = valueIsObject ? new RegExp(`('|")__${key}__('|")`) : `__${key}__`;
     return str.replace(search, function() {
-      return valueIsString ? value : JSON.stringify(value)
+      return valueIsObject ? JSON.stringify(value) : value;
     })
   }, str);
 }

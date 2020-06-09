@@ -5,9 +5,10 @@ export default {
   },
   onReady() {
     var showId = '__showId__'
-    var offlineData = '__offlineData__'
     var result = '__result__'
     var msg = '__result.msg__'
+    var msg = '__cubeName + "|" + result.msg__'
+    var id = '__getId()__'
     this.request({
       api: "detail",
       complete: (defaultData, res) => {
