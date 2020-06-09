@@ -28,12 +28,11 @@ cubeMacro({
 
 ## 参数
 
-Options <Object>
-- templatePath <Path> ： 指定模板路径。
-- outputPath <Path> ： 指定输出路径。
-- watch <Boolean> :  监测模板更改，并重新构建。
-- config <Array|Function> ： 配置数据
-
+Options &lt;Object&gt;
+- templatePath &lt;Path&gt; ： 指定模板路径。
+- outputPath &lt;Path&gt; ： 指定输出路径。
+- watch &lt;Boolean&gt; :  监测模板更改，并重新构建。
+- config &lt;Array|Function&lt;Array|Promise&gt;&gt; ： 配置数据
 
 ## 使用
 
