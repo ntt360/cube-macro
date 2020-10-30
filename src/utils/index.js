@@ -6,6 +6,10 @@ function isFunction(source) {
   return '[object Function]' === Object.prototype.toString.call(source);
 };
 
+function isArray(source) {
+  return '[object Array]' === Object.prototype.toString.call(source);
+};
+
 function isObject(source) {
   return '[object Object]' === Object.prototype.toString.call(source);
 };
@@ -13,5 +17,6 @@ function isObject(source) {
 module.exports = {
   isString,
   isFunction,
+  isArray,
   isObject
 }

@@ -5,7 +5,7 @@ const istextorbinary = require('istextorbinary');
 const chokidar = require('chokidar');
 const { Signale } = require('signale');
 
-const { isFunction, isObject } = require('./utils');
+const { isFunction, isObject, isArray } = require('./utils');
 const {
   DEFAULT_TEMPLATE_PATH,
   DEFAULT_OUTPUT_PATH
@@ -58,7 +58,7 @@ function replaceBuffer (str, config, extname) {
   return matchVariableList.reduce(function(str, __key__) {
     const key = __key__.match(/__(.*)__/)[1];
     const value = exec(key, config)
-    const valueIsObject = isObject(value) || isFunction(value)
+    const valueIsObject = isObject(value) || isArray(value)
     const search = valueIsObject ? new RegExp(`('|")__${key}__('|")`) : `__${key}__`;
     return str.replace(search, function() {
       return valueIsObject ? JSON.stringify(value) : value;
