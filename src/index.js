@@ -52,6 +52,9 @@ function createPipeConfig({
 
 function replaceBuffer (str, config, extname) {
   const matchVariableList = str.match(/__(.*)__/ig);
+  if (!matchVariableList) {
+    return str;
+  }
   return matchVariableList.reduce(function(str, __key__) {
     const key = __key__.match(/__(.*)__/)[1];
     const value = exec(key, config)
