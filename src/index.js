@@ -58,7 +58,7 @@ function replaceBuffer (str, config, extname) {
   return matchVariableList.reduce(function(str, __key__) {
     const key = __key__.match(/__(.*)__/)[1];
     const value = exec(key, config)
-    const valueIsObject = isObject(value)
+    const valueIsObject = isObject(value) || isFunction(value)
     const search = valueIsObject ? new RegExp(`('|")__${key}__('|")`) : `__${key}__`;
     return str.replace(search, function() {
       return valueIsObject ? JSON.stringify(value) : value;
