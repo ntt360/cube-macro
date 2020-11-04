@@ -28,10 +28,12 @@ program
 const tplPath = path.resolve(program.template ? program.template : DEFAULT_TEMPLATE_PATH);
 const outPath = path.resolve(program.out ? program.out : DEFAULT_OUTPUT_PATH);
 const dataConfigPath = path.join(tplPath, DEFAULT_CONFIG_PATH);
-
+const BUILD_TIME = 'build time';
+console.time(BUILD_TIME)
 cubeMacro({
   templatePath: tplPath,
   outputPath: outPath,
   watch: program.watch,
-  config: require(dataConfigPath)
-})
+  config: require(dataConfigPath),
+  configPath: dataConfigPath,
+}).then(() => console.timeEnd(BUILD_TIME));

@@ -101,7 +101,7 @@ function runTask (pipeLineHandle) {
           function doReplace() {
             if (config[pipe.key] && file.isBuffer()) {
               const buf = replaceBuffer(String(file.contents), config[pipe.key], path.extname(file.path));
-              file.contents = new Buffer(buf);
+              file.contents = new Buffer.from(buf);
               return callback(null, file);
             }
             callback(null, file);
@@ -147,46 +147,56 @@ function compile({
         return [ config, pipeConfig ];
       })
     })
-  }).catch(function (error) { new Signale().fatal(new Error(error)) })
+  });
+}
+
+function noCacheRequire(path) {
+  delete require.cache[path];
+  return require(path);
 }
 
 module.exports = function ({
   templatePath = DEFAULT_TEMPLATE_PATH,
   outputPath = DEFAULT_OUTPUT_PATH,
   watch = false,
-  config
+  config,
+  configPath,
 }) {
-  if (watch) {
-    chokidar
-      .watch([ templatePath ])
-      .on('change', function(_path) {
-        new Signale().watch(`File: ${_path} has been changed\n`);
-        compile({
-          templatePath,
-          outputPath,
-          config
-        })
-      })
-      .on('ready', function () {
-        new Signale({
-          types: {
-            remind: {
-              badge: '…',
-              color: 'blue',
-              label: '👍 👍 👍',
-              logLevel: 'info'
-            }
-          }
-        }).remind('Watching template directory...\n');
-      })
-      .on('error', function (error) {
-        new Signale().fatal(new Error(error))
-      });
-  }
-
   return compile({
     templatePath,
     outputPath,
     config
-  })
+  }).then(() => {
+    if (watch) {
+      chokidar
+        .watch([ templatePath ])
+        .on('change', function(_path) {
+          new Signale().watch(`File: ${_path} has been changed\n`);
+          // TODO: 优化重编译
+          // 针对配置文件某一项目的配置修改及模板某一文件的内容修改
+          // 配置数据diff
+          // 收集文件的宏替换变量
+          compile({
+            templatePath,
+            outputPath,
+            config: _path === configPath ? noCacheRequire(_path) : config
+          });
+        })
+        .on('ready', function () {
+          new Signale({
+            types: {
+              remind: {
+                badge: '…',
+                color: 'blue',
+                label: '👍 👍 👍',
+                logLevel: 'info'
+              }
+            }
+          }).remind('Watching template directory...\n');
+        })
+        .on('error', function (error) {
+          new Signale().fatal(new Error(error))
+        });
+    }
+  }).catch(function (error) { new Signale().fatal(new Error(error)) });
 }

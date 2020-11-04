@@ -4,6 +4,7 @@
   "description": "cube-macro是一个实验性质的批量生成同类cube的工具",
   "main": "src/index.js",
   "scripts": {
+    "test": "npm run test-cli && npm run test-cli-params-less && npm run test-script",
     "test-cli": "NODE_ENV=production node bin/cube-macro.js -t ./tpl -o ./dist",
     "test-cli-params-less": "NODE_ENV=production node bin/cube-macro.js",
     "test-cli-watch": "NODE_ENV=production node bin/cube-macro.js -w",
