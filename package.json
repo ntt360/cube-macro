@@ -1,6 +1,6 @@
 {
   "name": "cube-macro",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "cube-macro是一个实验性质的批量生成同类cube的工具",
   "main": "src/index.js",
   "scripts": {
