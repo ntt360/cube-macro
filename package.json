@@ -31,7 +31,7 @@
     "istextorbinary": "^4.3.0",
     "signale": "^1.4.0",
     "through2": "^3.0.1",
-    "vinyl-fs": "^3.0.3"
+    "vinyl-fs": "^4.0.0"
   },
   "bin": {
     "cube-macro": "./bin/cube-macro.js"
